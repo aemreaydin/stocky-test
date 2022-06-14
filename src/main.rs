@@ -1,12 +1,29 @@
-// fn solution(input: &str) -> Result<String> {
-//     let mut iter = input.lines();
-//     let num_intersections = iter.next()?.parse::<usize>()?;
-//     let shortcuts = iter
-//         .next()?
-//         .split(" ")
-//         .filter_map(|c| c.parse::<usize>().ok())
+use std::fs;
 
-// }
+#[derive(Debug, Clone)]
+struct Graph {
+    pub shortcuts: Vec<usize>,
+}
+
+impl Graph {
+    fn new(in_shortcuts: &[usize]) -> Self {
+        Self {
+            shortcuts: {
+                in_shortcuts
+                    .iter()
+                    .enumerate()
+                    .map(|(index, shortcut_index)| {
+                        if index != shortcut_index - 1 {
+                            shortcut_index - 1
+                        } else {
+                            0
+                        }
+                    })
+                    .collect::<Vec<usize>>()
+            },
+        }
+    }
+}
 
 fn convert_input(input: &str) -> (usize, Vec<usize>) {
     let mut iter = input.lines();
@@ -20,7 +37,14 @@ fn convert_input(input: &str) -> (usize, Vec<usize>) {
     (num_intersections, shortcuts)
 }
 
-fn main() {}
+fn main() {
+    let input = fs::read_to_string("input.txt").unwrap();
+    let (num_intersections, shortcuts) = convert_input(&input);
+    println!("{} - {:?}", num_intersections, shortcuts);
+
+    let graph = Graph::new(&shortcuts);
+    println!("{:#?}", graph);
+}
 
 #[cfg(test)]
 mod tests {
