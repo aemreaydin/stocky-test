@@ -1,4 +1,4 @@
-use std::fs;
+use std::{collections::VecDeque, fs};
 
 #[derive(Debug, Clone)]
 struct Graph {
@@ -23,6 +23,31 @@ impl Graph {
             },
         }
     }
+
+    fn find_shortest_paths(&mut self) -> String {
+        let mut distances = vec![usize::MAX; self.shortcuts.len()];
+        distances[0] = 0;
+        let mut queue = VecDeque::from([1usize]);
+
+        while !queue.is_empty() {
+            let popped = queue.pop_front().unwrap();
+            if popped >= distances.len() {
+                break;
+            }
+
+            // If distance is MAX, we know that we have to at least assign the last node + 1
+            if distances[popped] == usize::MAX {
+                distances[popped] = distances[popped - 1] + 1;
+                queue.push_front(popped + 1);
+            }
+        }
+
+        let str_vec = distances
+            .iter()
+            .map(|d| d.to_string())
+            .collect::<Vec<String>>();
+        str_vec.join(" ")
+    }
 }
 
 fn convert_input(input: &str) -> (usize, Vec<usize>) {
@@ -42,8 +67,9 @@ fn main() {
     let (num_intersections, shortcuts) = convert_input(&input);
     println!("{} - {:?}", num_intersections, shortcuts);
 
-    let graph = Graph::new(&shortcuts);
-    println!("{:#?}", graph);
+    let mut graph = Graph::new(&shortcuts);
+    println!("{:?}", graph);
+    println!("{:?}", graph.find_shortest_paths());
 }
 
 #[cfg(test)]
