@@ -2,7 +2,7 @@ use std::{collections::VecDeque, fs};
 
 #[derive(Debug, Clone)]
 struct Graph {
-    pub shortcuts: Vec<usize>,
+    pub shortcuts: Vec<Option<usize>>,
 }
 
 impl Graph {
@@ -14,12 +14,12 @@ impl Graph {
                     .enumerate()
                     .map(|(index, shortcut_index)| {
                         if index != shortcut_index - 1 {
-                            shortcut_index - 1
+                            Some(shortcut_index - 1)
                         } else {
-                            0
+                            None
                         }
                     })
-                    .collect::<Vec<usize>>()
+                    .collect::<Vec<Option<usize>>>()
             },
         }
     }
@@ -28,6 +28,7 @@ impl Graph {
         let mut distances = vec![usize::MAX; self.shortcuts.len()];
         distances[0] = 0;
         let mut queue = VecDeque::from([1usize]);
+        // PriorityQueue
 
         while !queue.is_empty() {
             let popped = queue.pop_front().unwrap();
@@ -40,6 +41,8 @@ impl Graph {
                 distances[popped] = distances[popped - 1] + 1;
                 queue.push_front(popped + 1);
             }
+
+            // Shortcut related stuff
         }
 
         let str_vec = distances
